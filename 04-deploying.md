@@ -72,11 +72,24 @@ be able to view the content by visiting `http://localhost`:
 
 Once this is functional, we can tell `mixer` to point to this content 
 by its URL. To do this, we need to edit `builder.conf` and change the 
-following options to these values:
+following options to properly point the system to the mix we're going 
+to be making.
+
+Because of an issue with Qemu and networking, we'll need to point the 
+OS inside the virtual machine at the external IP address of the most 
+where `nginx` is running. We can find out the IP address with the 
+following command:
 
 ```
-CONTENTURL=http://localhost/
-VERSIONURL=http://localhost/
+~/mix $ networkctl status
+```
+
+There are likely 2 or 3 entries listed under `Address` in the output of 
+this command, and all should be valid for use in the `builder.conf`:
+
+```
+CONTENTURL=http://10.1.2.138/
+VERSIONURL=http://10.1.2.138/
 ```
 
 Now that that is in place, we can proceed to the next step, which is to 
@@ -115,8 +128,58 @@ update content.
 
 ## Create the image
 
+We'll need to generate an `ister` config file that describes what kind 
+of image we're creating and what needs to go into the image. For the 
+purpose of this training we're going to make a `live` image that we can 
+boot straight into without the need for an installation step. First, we 
+create the file `release-image-config.json` with the following content 
+in the mix folder:
 
+```
+{
+    "DestinationType" : "virtual",
+    "PartitionLayout" : [ { "disk" : "release.img", "partition" : 1, "size" : "32M", "type" : "EFI" },
+                          { "disk" : "release.img", "partition" : 2, "size" : "16M", "type" : "swap" },
+                          { "disk" : "release.img", "partition" : 3, "size" : "10G", "type" : "linux" } ],
+    "FilesystemTypes" : [ { "disk" : "release.img", "partition" : 1, "type" : "vfat" },
+                          { "disk" : "release.img", "partition" : 2, "type" : "swap" },
+                          { "disk" : "release.img", "partition" : 3, "type" : "ext4" } ],
+    "PartitionMountPoints" : [ { "disk" : "release.img", "partition" : 1, "mount" : "/boot" },
+			       { "disk" : "release.img", "partition" : 3, "mount" : "/" } ],
+    "Version": "latest",
+    "Bundles": ["kernel-kvm", "os-core", "os-core-update"]
+}
+```
+
+After this file is in place, `mixer` can properly start `ister` for us 
+with the `build image` subcommand.
 
 ```
 ~/mix $ sudo mixer build image
 ```
+
+This outputs a file called `release.img` which is directly bootable in 
+Qemu. We use the standard `start_qemu.sh` script to invoke Qemu to then 
+invoke the image and redirect the VM output to our local console. For 
+this we also need the OVMF.fd file.
+
+```
+~/mix $ sudo ./start_qemu.sh release.img
+```
+
+You'll need to log in as root and immediately provide a new root 
+password, as you may be familiar with already - Clear Linux OS does not 
+ship with a default root password.
+
+After logging in as root, you'll find that `swupd update` should 
+display that there are no current updates available, and it should list 
+your latest mix content version as the last available update.
+
+If we create a new update on the outside of the VM quickly with:
+
+```
+~/mix $ sudo mixer build all
+```
+
+And then run `swupd update` inside the VM, we should see the update 
+apply.
