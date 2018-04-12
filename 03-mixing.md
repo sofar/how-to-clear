@@ -36,12 +36,13 @@ the file system. In this way, if a file changes permissions, xattr tags
 or ownership, this is considered a normal update from one content unit 
 to a new content unit.
 
-The metadata is similarly reused between different versions of the OS. 
-This means that if a bundle doesn't change between two versions, the 
-`swupd` client will reuse the older version. In the metadata the latest 
-version that a manifest metadata file is recorded. This allows clients 
-to reconstruct a full new view of the work that needs to be done while 
-maximizing reuse of the already known metadata.
+The metadata is similarly reused between different versions of the OS.
+This means that if a bundle doesn't change between two versions, the
+`swupd` client will reuse the older version. If a bundle *does* change,
+metadata will be updated according to the precise content changes
+introduced in the new version. This allows clients to reconstruct a full
+new view of the work that needs to be done while maximizing reuse of the
+already known metadata.
 
 ### Metadata
 
