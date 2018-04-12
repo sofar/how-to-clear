@@ -14,6 +14,10 @@ How To Clear
    2.  [QA and testing](06-2-qa-testing.md)
    3.  [Debugging](06-3-debugging.md)
 
+```
+~ $ git clone https://github.com/clearlinux/how-to-clear
+```
+
 ## Foreword
 
 Clear Linux OS for Intel Architecture(*) was designed a long time ago 
