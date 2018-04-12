@@ -115,7 +115,7 @@ tarball of the entire content all at once.
 The content comes in compressed tar files:
 
 ```
-$ curl -q -L -O https://download.clearlinux.org/update/21530/files/634ed1be7098435e3a3f28f13740b260e171e9d65891a002998d1e5fc691b471.tar
+$ curl -s -L -O https://download.clearlinux.org/update/21530/files/634ed1be7098435e3a3f28f13740b260e171e9d65891a002998d1e5fc691b471.tar
 $ file 634ed1be7098435e3a3f28f13740b260e171e9d65891a002998d1e5fc691b471.tar 
 634ed1be7098435e3a3f28f13740b260e171e9d65891a002998d1e5fc691b471.tar: XZ compressed data
 ```
