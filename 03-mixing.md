@@ -202,8 +202,6 @@ Available Commands:
 Flags:
       --check        Check all dependencies needed by mixer and quit
   -h, --help         help for mixer
-      --new-config   EXPERIMENTAL: use the new TOML config format
-      --new-swupd    EXPERIMENTAL: Use new implementation of swupd-server when possible
       --offline      Skip caching upstream-bundles; work entirely with local-bundles
       --version      Print version information and quit
 
@@ -229,7 +227,6 @@ demonstrate how this works.
 
 ```
 ~/mix $ mixer init --clear-version 21530 --mix-version 10 --local-rpms 
- --new-swupd
 ```
 
 * `init` tells mixer to create the needed configuration files and 
@@ -240,8 +237,6 @@ upstream Clear Linux OS version
 which is the default
 * `--local-rpms` tells mixer to create folders where we can later add 
 our own custom RPM files
-* `--new-swupd` is needed temporarily due to recent changes in the 
-`mixer` cli tool and will be removed soon
 
 ## builder.conf
 
