@@ -9,7 +9,7 @@ How To Clear
  3.  [Basic Mixing](03-mixing.md)
  4.  [Deploying a Mix](04-deploying.md)
  5.  [Adding in custom RPMs](05-rpms.md)
- 6.  Advanced topics
+ 6.  Developer topics
    1.  [Telemetry](06-1-telemetry.md)
    2.  [QA and testing](06-2-qa-testing.md)
    3.  [Debugging](06-3-debugging.md)
