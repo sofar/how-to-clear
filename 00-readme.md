@@ -73,6 +73,12 @@ project page to open a ticket or clone/branch the training and help us.
 
     [how-to-clear](https://github.com/clearlinux/how-to-clear/)
 
+For the convenience of students, we've included a folder called `files`
+and added most of the files that will need to be created or downloaded
+during the training exercises. This will allow students to skip through
+some of the steps and get the proper files in place quickly and stay
+focussed on the topic without spending time on meta-problems.
+
 ## Need Help?
 
 The Clear Linux OS team can be reached for generic questions about 
