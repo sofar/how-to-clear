@@ -10,9 +10,9 @@ How To Clear
  4.  [Deploying a Mix](04-deploying.md)
  5.  [Adding in custom RPMs](05-rpms.md)
  6.  Developer topics
-   1.  [Telemetry](06-1-telemetry.md)
-   2.  [QA and testing](06-2-qa-testing.md)
-   3.  [Debugging](06-3-debugging.md)
+     6.1.  [Telemetry](06-1-telemetry.md)
+     6.2.  [QA and testing](06-2-qa-testing.md)
+     6.3.  [Debugging](06-3-debugging.md)
 
 ```
 ~ $ git clone https://github.com/clearlinux/how-to-clear

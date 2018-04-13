@@ -97,18 +97,29 @@ have.
 
 ```
 ~/clearlinux $ make clone_dmidecode
-~/clearlinux $ cd packages/dmidecode
 ```
+
+**********************************************************************
+**                              whoops                              **
+**                                                                  **
+** Due to bugs in our tooling, this section isn't entirely as we    **
+** would have liked it to be. We're working on resolving the issues **
+** to make this part of the training much more simple, but for now  **
+** you'll have to work around some bugs here                        **
+**                                                                  **
+**********************************************************************
+
+```
+~/clearlinux $ mv packages/dmidecode packages/dmidecode2
+~/clearlinux $ cd packages/dmidecode2
+```
+
+Change `Makefile` such that `PACKAGE_NAME` is `dmidecode2` as well.
 
 Since `dmidecode` is already present in Clear Linux OS, we can just 
 start using that packages and make modifications to it. This allows us 
 to bypass most of the hurdles of packaging, and gives us a starting 
 point that is as close to what Clear Linux OS uses as possible.
-
-```
-~/clearlinux/packages/dmidecode $ make bump
-~/clearlinux/packages/dmidecode $ make build
-```
 
 We can make a quick change to this package, and change the revision to 
 a new number that's higher than the Clear Linux OS version, and rebuild 
@@ -116,11 +127,31 @@ it. This way we can include it in our mix and know for sure that it's
 our version and not the version from Clear Linux OS' RPM repository 
 instead.
 
+Add the following lines to the `excludes` file:
+
+```
+/usr/bin/biosdecode
+/usr/bin/ownership
+/usr/bin/vpddecode
+/usr/share/man/man8/biosdecode.8
+/usr/share/man/man8/ownership.8
+/usr/share/man/man8/vpddecode.8
+```
+
+These files are not needed by dmidecode, and due to security 
+restructions, they are useless on Clear Linux OS because they require 
+`/dev/mem` to be available, which is not the case on Clear Linux OS. We 
+can therefore just remove them from the RPM files without penalty.
+
+```
+~/clearlinux/packages/dmidecode2 $ make autospec
+```
+
 We should end up with several new RPM files under `results/`. This 
-brings us to the next phase: Adding `dmidecode` into our mix content 
+brings us to the next phase: Adding `dmidecode2` into our mix content 
 and pushing it to our target device.
 
-## Adding `dmidecode` to our mix
+## Adding `dmidecode2` to our mix
 
 We need to maintain an RPM repository. An RPM repository is a 
 combination of a few RPM files and some metadata that allows programs 
@@ -135,22 +166,14 @@ needed.
 
 The `make autospec` command creates RPM files under each package. We 
 could copy these files manually over to the `local-rpms` folder in the 
-`mix` folder structure, but we have some tools available to do this 
-more efficiently.
-
-Inside a package folder, there are two simple commands that you can 
-execute that will automatically place RPM files of that package into an 
-RPM repository for you. This repository will be created in the 
-`~/clearlinux/repo` folder. Once we're done placing RPM files here, we 
-can copy them over to the `mixer` location:
+`mix` folder structure, in the future we will have some tools available
+to do this more efficiently.
 
 ```
-~/clearlinux/packages/dmidecode $ make repoadd
-~/clearlinux/packages/dmidecode $ cd ~/mix
-~/clearlinux/packages/dmidecode $ cp -v ~/clearlinux/repo/*.rpm local-rpms/
+~/clearlinux/packages/dmidecode2 $ cp results/*x86_64*rpm ~/mix/local-rpms/
 ```
 
-Next, we can include `dmidecode` in several ways to our update content. 
+Next, we can include `dmidecode2` in several ways to our update content. 
 We can either create a new bundle, locally. We can modify an existing 
 upstream bundle, or we can even include an upstream bundle that already 
 has `dmidecode` present. For simplicity, we'll make a new local bundle:
@@ -160,8 +183,8 @@ has `dmidecode` present. For simplicity, we'll make a new local bundle:
 ~/mix $ mixer bundle edit dmidecode
 ```
 
-Add the `dmidecode` or `demidecode-bin` (your choice) RPM file name to
-the bundle, and you're ready to deploy the change:
+Add the `dmidecode2` RPM file name to the bundle, and you're ready to
+deploy the change:
 
 ```
 ~/mix $ sudo mixer build all
@@ -176,3 +199,104 @@ after we update, and use it:
 ~ # dmidecode
 ```
 
+And we can verify that our `biosdecode` program is missing in the same 
+way, as expected.
+
+## Linux kernel RPM
+
+One of the more common use cases that people ask us about is how they 
+can modify the Linux kernel on the device. This is entirely similar to 
+the above demonstration, but we'll go into the kernel specific aspects 
+one more time.
+
+First, we're going to modify the `linux-kvm` kernel that is already 
+used on the system so that we don't need to switch kernels on the 
+device. For this reason we want to make sure that we've already started 
+with the proper kernel package for the target device. In this training, 
+we've settled on the KVM kernel image, but for your purposes, you may 
+need to choose a different kernel or perhaps even make a significantly 
+new kernel.
+
+```
+~/clearlinux $ make clone_linux-kvm
+```
+
+Again, we have to do a workaround here with the package name:
+
+```
+~/clearlinux $ mv packages/linux-kvm packages/linux-kvm2
+~/clearlinux $ cd packages/linux-kvm2
+~/clearlinux/packages/linux-kvm2 $ mv linux-kvm.spec linux-kvm2.spec
+```
+
+You will additionally have to edit `Makefile` again as well as 
+`linux-kvm2.spec` to change the package name in both files and add the 
+`2` in there.
+
+We can do a ton of changes to this kernel. For this example we'll 
+disable an option that will be easily verifyable later on. On the 
+target, we can see that the `btrfs` filesystem is supported by the 
+current kernel by doing:
+
+```
+~ # modprobe btrfs
+~ # grep btrfs /proc/filesystems
+```
+
+To disable this, edit the `config` file in the `linux-kvm2` package 
+folder and change the line:
+
+```
+CONFIG_BTRFS_FS=m
+```
+
+to:
+
+```
+# CONFIG_BTRFS_FS is not set
+```
+
+Finally, one more temporary workaround:
+
+```
+~/clearlinux/packages/linux-kvm2 $ make generateupstream
+```
+
+And now we can build the RPM files:
+
+```
+~/clearlinux/packages/linux-kvm2 $ make build
+```
+
+This will take a little bit of time, as the kernel isn't small. Once 
+the process finishes, you should have 2 binary RPM files under the 
+`results` folder that we can give back to mixer again:
+
+```
+~/clearlinux/packages/linux-kvm2 $ cp results/*x86_64.rpm ~/mix/local-rpms/
+```
+
+Switch back to the mixer, as we can now mix in our changed kernel.
+
+```
+~/clearlinux/packages/linux-kvm2 $ cd ~/mix
+~/mix $ mixer bundle edit kernel-kvm
+```
+
+Change `linux-kvm` to `linux-kvm2`.
+
+```
+~/mix $ sudo mixer build all
+```
+
+Then we can switch to the target device and verify the changes again:
+
+```
+~ # swupd update
+~ # reboot
+<snip>
+~ # modprobe btrfs
+modprobe: FATAL: Module btrfs not found ...
+```
+
+Success!
