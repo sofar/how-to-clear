@@ -300,3 +300,12 @@ modprobe: FATAL: Module btrfs not found ...
 ```
 
 Success!
+
+## Exercises
+
+* Use `make shell` in a package folder after building, or when a build 
+error occurs.
+* Use `make autospecnew NAME=<name> URL=<url>` on something that isn't 
+in Clear Linux OS yet.
+* Use `make repoadd` in packages that need new dependencies and build 
+one custom package against another new custom package.

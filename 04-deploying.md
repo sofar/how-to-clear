@@ -183,3 +183,11 @@ If we create a new update on the outside of the VM quickly with:
 
 And then run `swupd update` inside the VM, we should see the update 
 apply.
+
+## Exercises
+
+* List your own mix bundles on your target system.
+* Verify your install.
+* Downgrade your target system with `swupd`, and then update it again.
+* Create an installer image using the installer configuration file at 
+[https://download.clearlinux.org/current/config/image/installer-config.json]. You'll also need the referenced python script.

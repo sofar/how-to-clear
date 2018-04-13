@@ -398,3 +398,10 @@ content again and you are finished.
 ```
 ~/mix $ sudo mixer build all
 ```
+
+## What else to try
+
+* Edit an upstream bundle and change the package list to include or 
+exclude packages
+* Validate a modified bundle
+* Downgrade your mix to an older upstream version
