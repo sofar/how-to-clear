@@ -96,30 +96,83 @@ makes for an excellent starting point and shows off the tooling that we
 have.
 
 ```
-~/clearlinux $ make clone_curl
-~/clearlinux $ cd packages/curl
+~/clearlinux $ make clone_dmidecode
+~/clearlinux $ cd packages/dmidecode
 ```
 
-Since `curl` is already present in Clear Linux OS, we can just start 
-using that packages and make modifications to it. This allows us to 
-bypass most of the hurdles of packaging, and gives us a starting point 
-that is as close to what Clear Linux OS uses as possible.
+Since `dmidecode` is already present in Clear Linux OS, we can just 
+start using that packages and make modifications to it. This allows us 
+to bypass most of the hurdles of packaging, and gives us a starting 
+point that is as close to what Clear Linux OS uses as possible.
 
 ```
-~/clearlinux/packages/curl $ make build
+~/clearlinux/packages/dmidecode $ make bump
+~/clearlinux/packages/dmidecode $ make build
 ```
 
-We can make a quick change to the configuration and rebuild to actually 
-make a change. Edit the `configure` file and add the following option 
-on a line somewhere:
+We can make a quick change to this package, and change the revision to 
+a new number that's higher than the Clear Linux OS version, and rebuild 
+it. This way we can include it in our mix and know for sure that it's 
+our version and not the version from Clear Linux OS' RPM repository 
+instead.
+
+We should end up with several new RPM files under `results/`. This 
+brings us to the next phase: Adding `dmidecode` into our mix content 
+and pushing it to our target device.
+
+## Adding `dmidecode` to our mix
+
+We need to maintain an RPM repository. An RPM repository is a 
+combination of a few RPM files and some metadata that allows programs 
+like `yum` and `dnf` to follow and include dependencies when we're 
+asking it to use specific RPM files.
+
+In the mixer folder, we've already created a location for RPM files 
+when we used the `mixer init --local-rpms` command in an earlier 
+chapter. We will be using this location to put our newly generated RPM 
+files and thereby convey them to mixer so it can include them as 
+needed.
+
+The `make autospec` command creates RPM files under each package. We 
+could copy these files manually over to the `local-rpms` folder in the 
+`mix` folder structure, but we have some tools available to do this 
+more efficiently.
+
+Inside a package folder, there are two simple commands that you can 
+execute that will automatically place RPM files of that package into an 
+RPM repository for you. This repository will be created in the 
+`~/clearlinux/repo` folder. Once we're done placing RPM files here, we 
+can copy them over to the `mixer` location:
 
 ```
---disable-rtsp
+~/clearlinux/packages/dmidecode $ make repoadd
+~/clearlinux/packages/dmidecode $ cd ~/mix
+~/clearlinux/packages/dmidecode $ cp -v ~/clearlinux/repo/*.rpm local-rpms/
 ```
 
-Then use autospec to recreate the package:
+Next, we can include `dmidecode` in several ways to our update content. 
+We can either create a new bundle, locally. We can modify an existing 
+upstream bundle, or we can even include an upstream bundle that already 
+has `dmidecode` present. For simplicity, we'll make a new local bundle:
 
 ```
-~/clearlinux/packages/curl $ make autospec
+~/mix $ mixer bundle add dmidecode
+~/mix $ mixer bundle edit dmidecode
+```
+
+Add the `dmidecode` or `demidecode-bin` (your choice) RPM file name to
+the bundle, and you're ready to deploy the change:
+
+```
+~/mix $ sudo mixer build all
+```
+
+After this, we can go to our target device and install the new bundle 
+after we update, and use it:
+
+```
+~ # swupd update
+~ # swupd bundle-add dmidecode
+~ # dmidecode
 ```
 
