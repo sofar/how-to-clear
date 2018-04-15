@@ -1,6 +1,6 @@
 
 How To Clear - Scope of this training
-=================================
+=====================================
 
 ## Aim and scope of this training
 
@@ -17,7 +17,7 @@ create updates and how they are deployed to targets. The design is very
 different than what a traditional software developer would use, or what 
 for instance is used in the embedded sector. For that reason the 
 expectations as to how Clear Linux OS is made may be very different 
-from what novice users may expect.
+from what users new to Clear Linux OS may expect.
 
 The methodology centers heavily around the concept that the target 
 devices should be able to update often and quickly. At the opposite 
@@ -37,3 +37,10 @@ team uses koji to maintain RPM repositories but this is not required
 and simply one way that one could maintain RPM repositories. Clear 
 Linux OS provides `koji` in a bundle for those that wish to use it, 
 however.
+
+There are many other aspects related to the maintenance of a good Linux 
+OS that are not covered in this training, such as legal and liability 
+aspects, license compliance, and others. Before you start maintaining a 
+Linux OS yourself, you should be aware that you may have duties and 
+requirements that you must follow, even if you are reusing content from 
+the Clear Linux OS.

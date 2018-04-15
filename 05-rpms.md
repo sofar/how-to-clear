@@ -1,6 +1,6 @@
 
 How To Clear - Creating and mixing custom RPMs
-=========================================
+==============================================
 
 ## What you'll learn in this chapter
 
@@ -8,6 +8,7 @@ How To Clear - Creating and mixing custom RPMs
 * Creating a new RPM from an upstream release
 * Adding the custom RPM to the update content
 * Deploying the change to the target system
+
 
 ## Concepts
 
@@ -47,6 +48,19 @@ We'll use the `common` tooling to bypass some of the hurdles that make
 packaging more difficult and get to borrow most of the upstream content 
 for free. This allows us to modify targeted components for the purpose 
 of our mix quickly.
+
+The RPM files are built using `mock`. This program creates a buildroot 
+where the source code that needs to be compiled is in a separated 
+environment. This prevents the compiler from accidentally pulling in 
+system libraries that it wasn't meant to pull in. The buildroot will 
+only contain libraries that are explicitly required through 
+dependencies or as part of the buildroot toolchain.
+
+The buildroot dependencies are obtained from both local and upstream 
+Clear Linux OS `yum` repositories, and dependencies are resolved using 
+`dnf` or `yum` such that the buildroot is complete, before rpmbuild 
+commences with the build process.
+
 
 ## `common`
 
@@ -99,17 +113,20 @@ have.
 ~/clearlinux $ make clone_dmidecode
 ```
 
+```
 **********************************************************************
 **                              whoops                              **
 **                                                                  **
 ** Due to bugs in our tooling, this section isn't entirely as we    **
 ** would have liked it to be. We're working on resolving the issues **
 ** to make this part of the training much more simple, but for now  **
-** you'll have to work around some bugs here                        **
+** you'll have to work around some bugs here.                       **
 **                                                                  **
 **********************************************************************
+```
 
 ```
+# workaround
 ~/clearlinux $ mv packages/dmidecode packages/dmidecode2
 ~/clearlinux $ cd packages/dmidecode2
 ```
@@ -150,6 +167,7 @@ can therefore just remove them from the RPM files without penalty.
 We should end up with several new RPM files under `results/`. This 
 brings us to the next phase: Adding `dmidecode2` into our mix content 
 and pushing it to our target device.
+
 
 ## Adding `dmidecode2` to our mix
 
@@ -202,6 +220,7 @@ after we update, and use it:
 And we can verify that our `biosdecode` program is missing in the same 
 way, as expected.
 
+
 ## Linux kernel RPM
 
 One of the more common use cases that people ask us about is how they 
@@ -224,6 +243,7 @@ new kernel.
 Again, we have to do a workaround here with the package name:
 
 ```
+# workaround
 ~/clearlinux $ mv packages/linux-kvm packages/linux-kvm2
 ~/clearlinux $ cd packages/linux-kvm2
 ~/clearlinux/packages/linux-kvm2 $ mv linux-kvm.spec linux-kvm2.spec
@@ -259,6 +279,7 @@ to:
 Finally, one more temporary workaround:
 
 ```
+# workaround
 ~/clearlinux/packages/linux-kvm2 $ make generateupstream
 ```
 
@@ -309,3 +330,4 @@ error occurs.
 in Clear Linux OS yet.
 * Use `make repoadd` in packages that need new dependencies and build 
 one custom package against another new custom package.
+* Use `make clone` or `make pull` in the toplevel folder

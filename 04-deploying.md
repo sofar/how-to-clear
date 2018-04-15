@@ -1,6 +1,6 @@
 
 How To Clear - Deploying updates to a target
-=======================================
+============================================
 
 ## What you'll learn in this chapter
 
@@ -10,6 +10,7 @@ How To Clear - Deploying updates to a target
 * Starting a Clear Linux Virtual Machine
 * Switching the Clear Linux machine to use the custom mix update content
 
+
 ## Conveying the content to a target
 
 For the purpose of this training, we decided to choose a setup that can 
@@ -18,10 +19,11 @@ is to use a simple VM that will be updating against our locally
 produced mix content.
 
 For this we will need to setup a HTTP service that the client can 
-connect to. We will be using `nginx` for this since it comes with Clear
+connect to. We will be using `nginx` for this since it comes with Clear 
 Linux OS in a bundle. This will need some minor configuration. We won't 
-cover more complex `nginx` setup issues and avoid topics like `certbot`
+cover more complex `nginx` setup issues and avoid topics like `certbot` 
 which will be different for most setups.
+
 
 ## nginx
 
@@ -85,7 +87,8 @@ following command:
 ```
 
 There are likely 2 or 3 entries listed under `Address` in the output of 
-this command, and all should be valid for use in the `builder.conf`:
+this command, and all should be valid, but it is usually best to pick 
+the top one listed for use in the `builder.conf`:
 
 ```
 CONTENTURL=http://10.1.2.138/
@@ -94,6 +97,7 @@ VERSIONURL=http://10.1.2.138/
 
 Now that that is in place, we can proceed to the next step, which is to 
 create an image for a VM.
+
 
 ## VM kernel
 
@@ -125,6 +129,7 @@ it:
 You should verify that the `www` content contains a new version, and 
 that a `Manifest.kernel-kvm` now exists in the latest version of the 
 update content.
+
 
 ## Create the image
 
@@ -161,7 +166,8 @@ with the `build image` subcommand.
 This outputs a file called `release.img` which is directly bootable in 
 Qemu. We use the standard `start_qemu.sh` script to invoke Qemu to then 
 invoke the image and redirect the VM output to our local console. For 
-this we also need the OVMF.fd file.
+this we also need the `OVMF.fd` file. These can be found in the `files` 
+folder inside the training repository.
 
 ```
 ~/mix $ sudo ./start_qemu.sh release.img
@@ -183,6 +189,7 @@ If we create a new update on the outside of the VM quickly with:
 
 And then run `swupd update` inside the VM, we should see the update 
 apply.
+
 
 ## Exercises
 

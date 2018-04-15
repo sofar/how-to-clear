@@ -1,6 +1,6 @@
 
 How To Clear - Clear Linux Distribution Concepts
-===========================================
+================================================
 
 ## What this document explains
 

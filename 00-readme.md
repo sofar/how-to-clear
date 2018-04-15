@@ -1,6 +1,6 @@
 
 How To Clear
-===========
+============
 
 ## Table of Contents
 
@@ -16,6 +16,7 @@ How To Clear
 
 ```
 ~ $ git clone https://github.com/clearlinux/how-to-clear
+~ $ sudo swupd update
 ```
 
 ## Foreword
@@ -64,7 +65,8 @@ The content itself is designed to be self-contained and allow someone
 to use a clean Clear Linux OS installation to do the training in its 
 entirety. There should not be a need to install third party software, 
 and the training material should explain all the concepts without the 
-need for external reference documentation.
+need for external reference documentation. It is expected however 
+expected that people consult manual pages where appropriate.
 
 Due to the nature of the Clear Linux OS tools, a functional network 
 connection is required to use many of the tools. While it is possible 
